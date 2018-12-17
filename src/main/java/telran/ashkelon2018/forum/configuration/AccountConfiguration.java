@@ -62,7 +62,7 @@ public class AccountConfiguration {
 		return credentials;
 	}
 
-	public boolean findRoles(Set<String> rolesToken, String login, String loginToken, String acessMetod) {
+	public boolean findRoles(Set<String> rolesLogin, Set<String> rolesToken, String login, String loginToken, String acessMetod) {
 		
 		HashMap<String, Set<String>> acessKey = new HashMap<>();
 		
@@ -89,14 +89,21 @@ public class AccountConfiguration {
 			throw new MetodNotFoundExceptions("Forbidden." + (getLogicviewError()) != null ? "// Not Found Metod for accesKey / Error 4X030024" : "");
 		}
 		
-		 boolean tokenAdmin = rolesToken.contains(ADMIN);
-		 boolean tokenModer = rolesToken.contains(MODER);
-		 boolean tokenUser = rolesToken.contains(USER);
-
-
+		 boolean userTokenAdmin = rolesToken.contains(ADMIN);
+		 boolean userTokenModer = rolesToken.contains(MODER);
+		 boolean userTokenUser = rolesToken.contains(USER);
+		 
+		 boolean userLoginAdmin = rolesLogin.contains(ADMIN);
+		 boolean userLoginModer = rolesLogin.contains(MODER);
+		 boolean userLoginUser = rolesLogin.contains(USER);
+		
+		boolean res = false;
 
 		
-		return false;
+		
+
+		
+		return res;
 	}
 
 	// public boolean findRoles(Set<String> rolesToken, HashMap<String,Set<String>>

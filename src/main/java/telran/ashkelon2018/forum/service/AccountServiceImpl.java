@@ -76,25 +76,26 @@ public class AccountServiceImpl implements AccountSevice {
 					"Forbidden." + (accountConfiguration.getLogicviewError() ? "// Error 4X030010" : ""));
 		}		
 		
-		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(() -> new LoginNotFoundException(
+		UserAccount userAccountLogin = userAccountRepository.findById(login).orElseThrow(() -> new LoginNotFoundException(
 				"Login not found" + (accountConfiguration.getLogicviewError() ? "// Error 4X040008" : "")));
 		
 		UserAccount userAccountToken = userAccountRepository.findById(credentialsToken.getLogin())
 				.orElseThrow(() -> new UserNotFoundException(
 						"User not found." + (accountConfiguration.getLogicviewError() ? "// Error 4X010009" : "")));
 		
+		Set<String> rolesLogin = userAccountLogin.getRoles();
 		Set<String> rolesToken = userAccountToken.getRoles();
 		String loginToken = userAccountToken.getLogin();
 		
-		boolean rolesRules = accountConfiguration.findRoles(rolesToken, login, loginToken, "removeUser");
+		boolean rolesRules = accountConfiguration.findRoles(rolesLogin, rolesToken, login, loginToken, "removeUser");
 
 		if (rolesRules) {
-			userAccountRepository.delete(userAccount);
+			userAccountRepository.delete(userAccountLogin);
 		} else {
 			throw new ForbiddenException(
 					"Forbiden." + (accountConfiguration.getLogicviewError() ? "// Error 4X030009" : ""));
 		}		
-		return convertToUSerProfileDto(userAccount);
+		return convertToUSerProfileDto(userAccountLogin);
 	}
 
 	@Override
@@ -119,14 +120,15 @@ public class AccountServiceImpl implements AccountSevice {
 				.orElseThrow(() -> new UserNotFoundException(
 						"User not found." + (accountConfiguration.getLogicviewError() ? "// Error 4X010015" : "")));
 		
-		Set<String> rolesToken = userAccountToken.getRoles();
-		String loginToken = userAccountToken.getLogin();
-		
-		boolean rolesRules = accountConfiguration.findRoles(rolesToken, login, loginToken, "addRole");
-
 		UserAccount userAccountLogin = userAccountRepository.findById(login)
 				.orElseThrow(() -> new LoginNotFoundException(
 						"Login not found" + (accountConfiguration.getLogicviewError() ? "// Error 4X040017" : "")));
+		
+		Set<String> rolesLogin = userAccountLogin.getRoles();
+		Set<String> rolesToken = userAccountToken.getRoles();
+		String loginToken = userAccountToken.getLogin();
+		
+		boolean rolesRules = accountConfiguration.findRoles(rolesLogin, rolesToken, login, loginToken, "addRole");
 
 		if (rolesRules) {
 			userAccountRepository.delete(userAccountLogin);
@@ -167,10 +169,11 @@ public class AccountServiceImpl implements AccountSevice {
 				.orElseThrow(() -> new LoginNotFoundException(
 						"Login not found" + (accountConfiguration.getLogicviewError() ? "// Error 4X040021" : "")));
 
+		Set<String> rolesLogin = userAccountLogin.getRoles();
 		Set<String> rolesToken = userAccountToken.getRoles();
 		String loginToken = userAccountToken.getLogin();
 		
-		boolean rolesRules = accountConfiguration.findRoles(rolesToken, login, loginToken, "removeRole");
+		boolean rolesRules = accountConfiguration.findRoles(rolesLogin, rolesToken, login, loginToken, "removeRole");
 
 		if (rolesRules) {
 			userAccountRepository.delete(userAccountLogin);
